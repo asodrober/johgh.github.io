@@ -1,0 +1,15 @@
+# Site settings
+title: cheat-sheets
+email: jordihv@gmail.com
+description: > # this means to ignore newlines until "baseurl:"
+    My notes on Web Programming, Vim, Git, Linux.
+baseurl: "" # the subpath of your site, e.g. /blog/
+url: "http://johgh.github.io" # the base hostname & protocol for your site
+# twitter_username: jekyllrb
+github_username:  johgh
+
+# Build settings
+markdown: kramdown
+
+kramdown:
+    input: GFM

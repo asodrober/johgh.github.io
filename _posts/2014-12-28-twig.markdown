@@ -1,0 +1,106 @@
+---
+layout: post
+title:  "Twig"
+permalink:  "twig"
+date:   2014-12-28 16:30:15
+categories: Notes
+---
+* 
+{:toc}
+
+# Syntax
+
+Extends, import, includes
+: 
+{% highlight jinja %}
+{% raw %}
+{% extends '_visualStruct.html.twig' %}
+{% import 'm_forms.html.twig' as forms %}
+{% import 'm_buttons.html.twig' as buttons %}
+{% include '_seleccion_idiomas.html.twig' %}
+{% endraw %}
+{% endhighlight %}
+
+Macros
+: 
+{% highlight jinja %}
+{% raw %}
+{% macro reset(text='', id='', class='', style='') %}
+{% import _self as buttons %}
+{{ buttons.button(text == '' ?t('reset'):text, id == ''?'js-reset':id, class ~ "" bton-reset"",  style, 'reset') }}
+{% endmacro %}
+{% macro button(text, id, class='', style='', type='button') %}
+<button id=""{{ id }}"" style='{{ style }}' class=""bton-general {{ class }}"" type=""{{ type }}"">{{ text | capitalize}}</button>
+{% endmacro %}
+{% endraw %}
+{% endhighlight %}
+
+Foreach
+: 
+{% highlight jinja %}
+{% raw %}
+{% for key, menu in menuArr %}
+    {% set isSubmenu = (menu.submenu is iterable and menu.submenu|length > 0 ? true : false) %}
+            {{ menu.title | capitalize }}
+{% endfor %}
+{% endraw %}
+{% endhighlight %}
+
+Variables
+: 
+{% highlight jinja %}
+{% raw %}
+{% set foo, bar = 'foo', 'bar' %}
+{{ loop.first?'checked=""checked""' }}
+{% endraw %}
+{% endhighlight %}
+
+Raw
+: 
+{% highlight jinja %}
+{% raw %}
+{{ vista|raw }}"
+{% endraw %}
+{% endhighlight %}
+
+# Notes
+
+## Method Access (.)
+
+* 'foo.bar' does the following things on the PHP layer:
+    - check if foo is an array and bar a valid element;
+    - if not, and if foo is an object, check that bar is a valid property;
+    - if not, and if foo is an object, check that bar is a valid method (even if bar is the
+        constructor - use __construct() instead);
+    - if not, and if foo is an object, check that getBar is a valid method;
+    - if not, and if foo is an object, check that isBar is a valid method;
+    - if not, return a null value.
+
+* foo['bar'] on the other hand only works with PHP arrays:
+    - check if foo is an array and bar a valid element;
+    - if not, return a null value.
+
+## Get A Dynamic Attribute On A Variable
+{% raw %}
+{{ attribute(object, method) }}
+{{ attribute(object, method, arguments) }}
+{{ attribute(array, item) }}
+{% endraw %}
+
+## Constants
+* constant('Namespace\\Classname::CONSTANT_NAME')
+* {% raw %} {{ constant('RSS', date) }} {% endraw %}
+
+## Strict Variables
+* If a variable or attribute does not exist, you will get back a null value when the strict_variables
+option is set to false, otherwise Twig will throw an error (see environment options).
+* Useful methods:
+    - is defined
+    - is empty / is null
+
+## Advanced Inheritance
+embed
+: "Inline extension". The embed tag combines the behaviour of include and extends.
+
+use
+: "Multiple inheritance". The use statement tells Twig to import the blocks defined in blocks.html into the current template (it's like macros, but for blocks) "

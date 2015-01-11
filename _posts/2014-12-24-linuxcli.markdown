@@ -1,0 +1,618 @@
+---
+layout: post
+title:  "Linux"
+permalink:  "linux"
+date:   2014-12-24 16:30:15
+categories: Notes
+---
+* 
+{:toc}
+
+
+## General commands
+
+> For a complete generic command reference go [here](http://cb.vu/unixtoolbox.xhtml)
+
+ssh
+: {% highlight sh %}
+    $ ssh usuario@10.0.16.29 -p 222
+{% endhighlight %}
+
+scp
+: {% highlight sh %}
+    $ scp -P 222 D2System_venus.sql usuario@10.0.16.29:/home/usuario
+{% endhighlight %}
+
+Uncompress tar.gz/tar.bz2
+: {% highlight sh %}
+    $ tar -xz[v]f file.tar.gz / tar -xjf[v] file.tar.bz2
+{% endhighlight %}
+
+Compress and tar
+: {% highlight sh %}
+    $ tar -[z|j]cvf archive_name.tar.[gz|bz2] directory_to_compress
+{% endhighlight %}
+
+Assign default directories permissions
+: {% highlight sh %}
+    $ find . -type d -print0 | xargs -0 chmod 0755 # for directories
+{% endhighlight %}
+
+Assign default files permissions
+: {% highlight sh %}
+    $ find . -type f -print0 | xargs -0 chmod 0644 # for files
+{% endhighlight %}
+
+2 ways of deleting matching files
+: {% highlight sh %}
+    $ find . -name *flac  -print -exec rm {} \;
+    $ find . -newermt '2014-12-31' -print0 | xargs -0 rm -rf
+{% endhighlight %}
+
+Translate \n to null character
+: {% highlight sh %}
+    $ find . -iname "*blabla*" | sort -r | tr '\n' '\0' | xargs -0 mplayer
+{% endhighlight %}
+
+Using % with xargs
+: {% highlight sh %}
+    $ ls | xargs -I % echo %
+{% endhighlight %}
+
+Reload .bashrc/.zshrc
+: {% highlight sh %}
+    $ source [.bashrc|.zshrc]
+{% endhighlight %}
+
+Public IP
+: {% highlight sh %}
+    $ curl ifconfig.me
+{% endhighlight %}
+
+Set shell
+: {% highlight sh %}
+    $ chsh -s $(which zsh)
+{% endhighlight %}
+
+Configure java
+: {% highlight sh %}
+    $ update-alternatives --config java
+{% endhighlight %}
+
+<br />
+
+---
+<br />
+
+## Apt commands
+
+Shows package status, autocomplete only installed packages
+: {% highlight sh %}
+    $ dpkg -s
+{% endhighlight %}
+
+Autocompletes with repos packages, formatted output, accepts wildcards '*php*'
+: {% highlight sh %}
+    $ dpkg-query -l
+{% endhighlight %}
+
+Displays command name package
+: {% highlight sh %}
+    $ dpkg-query -S `which mkvmerge`
+{% endhighlight %}
+
+Shows location of installed package files
+: {% highlight sh %}
+    $ dpkg -L
+{% endhighlight %}
+
+Searches for a file in repos packages
+: {% highlight sh %}
+    $ apt-file search
+{% endhighlight %}
+
+Searches on repos (installed packages or not)
+: {% highlight sh %}
+    $ apt-file show
+{% endhighlight %}
+
+Resync with repos
+: {% highlight sh %}
+    $ apt-file update
+{% endhighlight %}
+
+Show last installed packages
+: {% highlight sh %}
+    sudo gunzip -d /var/log/dpkg.log.*gz
+    cat /var/log/dpkg.log* | grep "\ install\ " | sort | ccze
+{% endhighlight %}
+
+<br />
+
+---
+<br />
+
+## Desktop commands
+
+Create .desktop (gnome app launcher)
+: {% highlight sh %}
+    $ gnome-desktop-item-edit ~/.local/share/applications --create-new
+{% endhighlight %}
+
+Associate vlc app to some extensions
+: {% highlight sh %}
+    $ xdg-mime default vlc.desktop video/x-ogg video/x-ogm video/x-ogm+ogg video/x-real-video video/x-sgi-movie video/x-theora video/x-theora+ogg
+{% endhighlight %}
+
+Create mkv file (without changing codec)
+: {% highlight sh %}
+    $ mkvmerge -o "/media/bla/output.mkv" --title "videotitle" "input.mp4" --default-track 0  --sub-charset 0:ISO-8859-1 --language 0:spa "./subtitles.spa.srt" --language 1:en "./subtitles.eng.srt"
+{% endhighlight %}
+
+Change default app
+: {% highlight sh %}
+    $ mimeopen -d file.txt
+{% endhighlight %}
+
+Disable disk automount (don't ask to mount)
+: {% highlight sh %}
+    $ gsettings set org.gnome.desktop.media-handling automount false
+    $ gsettings set org.gnome.desktop.media-handling automount-open false
+{% endhighlight %}
+
+Notify opening guake when phplog changes (showing "tailed" log on guake)
+: {% highlight sh %}
+    $ while inotifywait -e close_write /var/log/phplog; do guake -s 0; guake -t; done > /dev/null 2>&1 &
+{% endhighlight %}
+
+Ask password for decrypt drive in gui popup
+: {% highlight sh %}
+    $ encfs --extpass=/usr/bin/ssh-askpass /src/.cryptk_encfs/ ~/dest > /dev/null 2>&1
+{% endhighlight %}
+
+Graphical rotation
+: {% highlight sh %}
+    $ xrandr -x / xrandr -y / xrandr -x -y / xrandr -o normal / xrandr -o inverted
+{% endhighlight %}
+
+Add app to startup
+: {% highlight sh %}
+    $cp /usr/share/applications/guake.desktop ~/.config/autostart/
+{% endhighlight %}
+
+Move app to workspace at startup
+: {% highlight sh %}
+    $ gsettings set org.gnome.shell.extensions.auto-move-windows application-list "['banshee.desktop:2','deluge.desktop:2','jdownloader.desktop:2']"
+{% endhighlight %}
+
+<br />
+
+---
+<br />
+
+## Alias
+
+Open file with associated gui app
+: {% highlight sh %}
+    openapp(){ nohup xdg-open $1 > /dev/null 2> /dev/null }; alias o=openapp
+{% endhighlight %}
+
+Force pull
+: {% highlight sh %}
+    alias gpull='git commit -a; git pull'
+{% endhighlight %}
+
+Force push
+: {% highlight sh %}
+    alias gpush='git commit -a; git push'
+{% endhighlight %}
+
+Difftool with origin/master
+: {% highlight sh %}
+    alias gdiff='git difftool origin/master'
+{% endhighlight %}
+
+Mergetool
+: {% highlight sh %}
+    alias gmerge='git mergetool'
+{% endhighlight %}
+
+LS alias
+: {% highlight sh %}
+    alias ll='ls -alF'
+    alias la='ls -A'
+    alias l='ls -CF'
+    alias lt='ls -lrt'
+{% endhighlight %}
+
+Short sudo
+: {% highlight sh %}
+    alias s='sudo'
+{% endhighlight %}
+
+Repeat last command with sudo
+: {% highlight sh %}
+    alias fuck='sudo !!'
+{% endhighlight %}
+
+Shutdown, reboot, suspend
+: {% highlight sh %}
+    alias shutdown='sudo shutdown –h now'
+    alias restart='sudo shutdown –r now'
+    alias suspend='sudo pm-suspend'
+{% endhighlight %}
+
+> on /etc/sudoers:
+> user ALL=(ALL) NOPASSWD: /usr/sbin/pm-suspend
+> user ALL=(ALL) NOPASSWD: /sbin/shutdown
+
+Mount formatted
+: {% highlight sh %}
+    alias mountt = 'mount |column -t'
+{% endhighlight %}
+
+Apt alias
+: {% highlight sh %}
+    alias inst='sudo apt-get install'
+    alias search='apt-cache search'
+    alias purge='sudo apt-get purge'
+    alias remove='sudo apt-get remove'
+    alias update='sudo apt-get update'
+    alias upgrade='sudo apt-get dist-upgrade'
+    alias show='sudo apt-cache show'
+{% endhighlight %}
+
+<br />
+
+---
+<br />
+
+## Bash
+
+Save and display any value on a variable (including \n \0)
+: {% highlight bash %}
+$ var="`ls -1`\n"
+$ echo -e $var
+{% endhighlight %}
+
+Parse file with delim into array
+: {% highlight bash %}
+IN="bla@some.com;john@home.com"
+while IFS=';' read -ra ADDR; do
+        for i in "${ADDR[@]}"; do
+            # process "$i"
+        done
+    done <<< "$IN"
+{% endhighlight %}
+
+Ternary logic: test empty directory
+: {% highlight bash %}
+[ "$(ls -A /path/to/directory)" ] && echo "Not Empty" || echo "Empty"
+{% endhighlight %}
+
+Bash flags
+: {% highlight bash %}
+echo $@
+shift
+if [ $# -ne 0 ]; then ...
+if [ $? -ne 0 ]; then ...
+if [ -f "$NEWFILE" ] then ...
+if [ -d /media/11C0-0BF1/ ]
+if [ ! -z $empty ]
+{% endhighlight %}
+
+Constants (-r), arrays (-a)
+: {% highlight bash %}
+declare -a -r LANGLST=( eng spa fre ger ita)
+{% endhighlight %}
+
+Iterate through array
+: {% highlight bash %}
+for opt in ${LANGLST[@]}; do
+{% endhighlight %}
+
+Read standard input
+: {% highlight bash %}
+read -n1 -p "Add language [$opt] [y/N]?"; echo ""
+if [ $REPLY = "y" -o $REPLY = "Y" ]
+{% endhighlight %}
+
+Get number of elements in the array
+: {% highlight bash %}
+ELEMENTS=${#ARRAY[@]}
+{% endhighlight %}
+
+For loop
+: {% highlight bash %}
+for (( i=0;i<$ELEMENTS;i++)); do echo ${ARRAY[${i}]}; done 
+{% endhighlight %}
+
+While with pipe
+: {% highlight bash %}
+ls | while read var; do echo $var; done;
+{% endhighlight %}
+> only useful if we don't care about the values of the loop variables after exiting the loop
+
+While loop + workaround pipe parallel process
+: {% highlight bash %}
+while read i; do echo "$i"; done < <(ls)  [< <(): bash process substitution]
+{% endhighlight %}
+> useful when some post-processing is needed after the loop
+
+Diff of 2 dirs with bash process substitution (see above)
+: {% highlight bash %}
+diff <(ls $first_directory) <(ls $second_directory)
+{% endhighlight %}
+
+Evaluating math expressions
+: {% highlight bash %}
+(( index++ ))
+(( 8 + 4 ))
+(( 5 == 5 ))
+{% endhighlight %}
+
+[[ ]] if there are ANDS
+: {% highlight bash %}
+if [[ $FLAG_INPUT == "0" && $FLAG_STDIN == "1" ]]
+{% endhighlight %}
+
+Ask password (-s: silent)
+: {% highlight bash %}
+    read -s -n 1 -p "" option;
+    if [ $? -eq 0 ]; then
+{% endhighlight %}
+
+Some awk and sed
+: {% highlight bash %}
+newname="`echo "$1" | sed 's/\[\+[^\[]*\]\+\ *//g' | sed 's/\ [\.]*/\./g' | sed 's/^[_-=\.]*//g'`"
+title=`cat /tmp/filminfo.tmp | grep title | awk -F"title: " '{print $2}' | sed 's/\ /./g'`
+{% endhighlight %}
+
+Getopts
+: {% highlight bash %}
+usage() { echo "Usage: $0 [-s <45|90>] [-p <string>]" 1>&2; exit 1; }
+while getopts ":s:p:" o; do
+    case "${o}" in
+        s)
+            s=${OPTARG}
+            ((s == 45 || s == 90)) || usage
+            ;;
+        p)
+            p=${OPTARG}
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
+shift $((OPTIND-1))
+if [ -z "${s}" ] || [ -z "${p}" ]; then
+    usage
+fi
+echo "s = ${s}"
+echo "p = ${p}"
+{% endhighlight %}
+
+Rsync (n=simulation)
+: {% highlight bash %}
+rsync -rltDvun --exclude='*.flac' $orig_path $dest_path/Música | tee -a $log_file
+{% endhighlight %}
+
+Useful commands for shell scripting
+: {% highlight bash %}
+basename, dirname, wc -l, tail -n+2, . (include)
+{% endhighlight %}
+
+<br />
+
+---
+<br />
+
+## Useful software
+
+<div id="install" style="font-family: monospace; color: #424242; border-style: dashed; border-color: #424242; padding:
+8px; border-width: 2px;"> No packages selected </div>
+<br />
+<a href="#" id="selectAll">Select all current section packages</a>
+<br />
+<a href="#" id="unselectAll">Unselect all current section packages</a>
+
+
+| Package                   | Repository                           | Section      |
+|:--------------------------|:-------------------------------------|:------------:|
+| apache2                   | Distro                               | Development  |
+| apt-file                  | Distro                               | CLI          |
+| ardour                    | Distro                               | Apps         |
+| atool                     | Distro                               | CLI          |
+| avidemux                  | Distro                               | Apps         |
+| banshee                   | Distro                               | Apps         |
+| bleachbit                 | Distro                               | Core         |
+| bless                     | Distro                               | Development  |
+| brackets                  | Distro                               | Development  |
+| brasero                   | Distro                               | Apps         |
+| calibre                   | Distro                               | Apps         |
+| ccze                      | Distro                               | CLI          |
+| checkinstall              | Distro                               | CLI          |
+| cheese                    | Distro                               | Apps         |
+| comix                     | Distro                               | Apps         |
+| curl                      | Distro                               | CLI          |
+| dbeaver                   | Distro                               | Development  |
+| dconf-editor              | Distro                               | Core         |
+| deluge                    | Distro                               | Apps         |
+| dropbox                   | Distro                               | Apps         |
+| empathy                   | Distro                               | Apps         |
+| encfs                     | Distro                               | CLI          |
+| exuberant-ctags           | Distro                               | Core         |
+| faac                      | Distro                               | CLI          |
+| faad                      | Distro                               | CLI          |
+| faience-azur-dark         | ppa:webupd8team/themes               | Core         |
+| faience-icon-theme        | ppa:webupd8team/themes               | Core         |
+| faience-theme             | ppa:webupd8team/themes               | Core         |
+| fancontrol                | Distro                               | Core         |
+| firefox                   | Distro                               | Apps         |
+| flac                      | Distro                               | CLI          |
+| fluid-soundfont-gm        | Distro                               | Core         |
+| fluidsynth                | Distro                               | Core         |
+| fluxgui                   | ppa:kilian/f.lux                     | Core         |
+| ftp                       | Distro                               | CLI          |
+| gconf-editor              | Distro                               | Core         |
+| geany                     | Distro                               | Development  |
+| gimp                      | Distro                               | Apps         |
+| git                       | Distro                               | Development  |
+| git-cola                  | Distro                               | Development  |
+| gitg                      | Distro                               | Development  |
+| gnome-panel               | Distro                               | Core         |
+| gnome-shell               | Distro                               | Core         |
+| gnome-shell-extensions    | Distro                               | Core         |
+| gnome-subtitles           | Distro                               | Apps         |
+| gnome-tweak-tool          | Distro                               | Core         |
+| google-chrome-stable      | Distro                               | Apps         |
+| gparted                   | Distro                               | Core         |
+| grep                      | Distro                               | CLI          |
+| grub-customizer           | ppa:danielrichter2007/grub-customizer| Core         |
+| gtk-recordmydesktop       | Distro                               | Core         |
+| guake                     | Distro                               | Core         |
+| handbrake                 | Distro                               | Apps         |
+| hardinfo                  | Distro                               | Core         |
+| htop                      | Distro                               | CLI          |
+| imagemagick               | Distro                               | Development  |
+| inotify-tools             | Distro                               | CLI          |
+| jdownloader               | ppa:jd-team/jdownloader              | Apps         |
+| lame                      | Distro                               | Core         |
+| less                      | Distro                               | Core         |
+| libreoffice-common        | Distro                               | Apps         |
+| lm-sensors                | Distro                               | Core         |
+| lyx                       | Distro                               | Apps         |
+| mdadm                     | Distro                               | Core         |
+| meld                      | Distro                               | Development  |
+| mencoder                  | Distro                               | CLI          |
+| mkvtoolnix                | Distro                               | CLI          |
+| mplayer2                  | Distro                               | Core         |
+| mysql-common              | Distro                               | Development  |
+| nautilus-open-terminal    | Distro                               | Core         |
+| nautilus-sendto           | Distro                               | Core         |
+| nmap                      | Distro                               | CLI          |
+| noip-2.1.9                | Distro                               | Apps         |
+| ntfs-3g                   | Distro                               | CLI          |
+| openshot                  | Distro                               | Apps         |
+| oracle-java8-installer    | ppa:webupd8team/java                 | Apps         |
+| owncloud                  | Distro                               | Apps         |
+| p7zip                     | Distro                               | Core         |
+| pdfjam                    | Distro                               | CLI          |
+| php5                      | Distro                               | Development  |
+| php5-apcu                 | Distro                               | Development  |
+| php5-cli                  | Distro                               | Development  |
+| php5-common               | Distro                               | Development  |
+| php5-curl                 | Distro                               | Development  |
+| php5-gd                   | Distro                               | Development  |
+| php5-imagick              | Distro                               | Development  |
+| php5-intl                 | Distro                               | Development  |
+| php5-json                 | Distro                               | Development  |
+| php5-ldap                 | Distro                               | Development  |
+| php5-mcrypt               | Distro                               | Development  |
+| php5-mysql                | Distro                               | Development  |
+| php5-oauth                | Distro                               | Development  |
+| php5-readline             | Distro                               | Development  |
+| php5-tidy                 | Distro                               | Development  |
+| php5-xdebug               | Distro                               | Development  |
+| php5-xsl                  | Distro                               | Development  |
+| php-codecoverage          | Distro                               | Development  |
+| php-codesniffer           | Distro                               | Apps         |
+| picard                    | Distro                               | Apps         |
+| playonlinux               | Distro                               | Apps         |
+| ppa-purge                 | Distro                               | Core         |
+| qjackctl                  | Distro                               | Core         |
+| qsynth                    | Distro                               | Core         |
+| seahorse                  | Distro                               | Core         |
+| sed                       | Distro                               | CLI          |
+| shotwell                  | Distro                               | Apps         |
+| simple-scan               | Distro                               | Apps         |
+| sopcast-player            | Distro                               | Apps         |
+| sound-juicer              | Distro                               | Apps         |
+| sp-auth                   | Distro                               | Apps         |
+| subdownloader             | Distro                               | Apps         |
+| synaptic                  | Distro                               | Core         |
+| thunderbird               | Distro                               | Apps         |
+| time                      | Distro                               | CLI          |
+| timidity                  | Distro                               | Core         |
+| tmux                      | Distro                               | Core         |
+| tuxguitar                 | Distro                               | Apps         |
+| ubuntu-restricted-extras  | Distro                               | Core         |
+| unison-all-gtk            | Distro                               | Apps         |
+| unity-tweak-tool          | Distro                               | Core         |
+| usb-creator-gtk           | Distro                               | Core         |
+| vim                       | Distro                               | Core         |
+| vim-gnome                 | Distro                               | Core         |
+| virtualbox                | Distro                               | Apps         |
+| vlc                       | Distro                               | Apps         |
+| vorbis-tools              | Distro                               | CLI          |
+| wget                      | Distro                               | CLI          |
+| wine                      | Distro                               | Core         |
+| wmctrl                    | Distro                               | CLI          |
+| xclip                     | Distro                               | CLI          |
+| xdotool                   | Distro                               | CLI          |
+| y-ppa-manager             | ppa:webupd8team/y-ppa-manager        | Core         |
+| zsh                       | Distro                               | Core         |
+
+<br />
+
+> Above packages were installed under Ubuntu 14.04, but are usually found on any Debian or Ubuntu based distribution
+
+Other repos
+: 
+wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -; sudo sh -c 'echo "deb
+http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list';
+ppa:gnome3-team/gnome3
+
+
+<script>
+    $(function(){
+        $('tr').each(function(){
+            $(this).find('td:first').prepend('<input class="check" type="checkbox"></input> ');
+        });
+
+        $(document).on('click', '#selectAll', function(e) {
+            e.preventDefault();
+            $(".check:visible").prop('checked', true).trigger("change");
+        });
+        
+        $(document).on('click', '#unselectAll', function(e) {
+            e.preventDefault();
+            $(".check:visible").prop('checked', false).trigger("change");
+        });
+
+        $(document).on('click', 'tr', function(e) {
+            e.stopPropagation();
+            $(this).find('input').trigger('click');
+
+        });
+
+        $(document).on('change', '.check', function() {
+            var pkg_to_install = 'sudo apt-get install';
+            var num_packages = 0;
+            $('.check').each(function(){
+                if ($(this).prop('checked') == true) {
+                    pkg_to_install = pkg_to_install + $(this).parent().text();
+                    /* console.log($(this).parent().parent())); */
+                    num_packages = num_packages + 1;
+                }
+            });
+            
+            if (num_packages == 0) {
+                pkg_to_install = 'No packages selected';
+            }
+            
+            $('#install').html(pkg_to_install);
+        });
+
+        $('table').addClass('tablesorter');
+        $('table').tablesorter({
+            theme : 'blue',
+            sortList: [[2,0], [1,0], [0,0]],
+        widgets: ["zebra", "filter"],
+            widgetOptions : {
+                filter_functions : { 1: true, 2 : true }
+                }
+        });
+    });
+</script>
