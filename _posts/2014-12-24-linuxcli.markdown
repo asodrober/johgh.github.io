@@ -410,8 +410,8 @@ basename, dirname, wc -l, tail -n+2, . (include)
 
 ## Useful software
 
-<div id="install" style="font-family: monospace; color: #424242; border-style: dashed; border-color: #424242; padding:
-8px; border-width: 2px;"> No packages selected </div>
+<div id="install" style="font-family: monospace; font-weight: bold; font-size:14px; border-style: dashed; border-color: #A0A0A0; padding:
+6px; border-width: 2px;"> No packages selected </div>
 <br />
 <a href="#" id="selectAll">Select all current section packages</a>
 <br />
@@ -435,6 +435,7 @@ basename, dirname, wc -l, tail -n+2, . (include)
 | checkinstall              | Distro                               | CLI          |
 | cheese                    | Distro                               | Apps         |
 | comix                     | Distro                               | Apps         |
+| command-not-found         | Distro                               | Core         |
 | curl                      | Distro                               | CLI          |
 | dbeaver                   | Distro                               | Development  |
 | dconf-editor              | Distro                               | Core         |
@@ -582,13 +583,15 @@ ppa:gnome3-team/gnome3
         });
 
         $(document).on('click', 'tr', function(e) {
-            e.stopPropagation();
             $(this).find('input').trigger('click');
-
         });
 
+        $(document).on('click', '.check', function(e) {
+            e.stopPropagation();
+        });
+        
         $(document).on('change', '.check', function() {
-            var pkg_to_install = 'sudo apt-get install';
+            var pkg_to_install = '<span style="font-weight: normal !important;">sudo apt-get install</span>';
             var num_packages = 0;
             $('.check').each(function(){
                 if ($(this).prop('checked') == true) {
