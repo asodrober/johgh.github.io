@@ -8,64 +8,8 @@ categories: Notes
 * 
 {:toc}
 
-# Syntax
 
-Extends, import, includes
-: 
-{% highlight jinja %}
-{% raw %}
-{% extends '_visualStruct.html.twig' %}
-{% import 'm_forms.html.twig' as forms %}
-{% import 'm_buttons.html.twig' as buttons %}
-{% include '_seleccion_idiomas.html.twig' %}
-{% endraw %}
-{% endhighlight %}
-
-Macros
-: 
-{% highlight jinja %}
-{% raw %}
-{% macro reset(text='', id='', class='', style='') %}
-{% import _self as buttons %}
-{{ buttons.button(text == '' ?t('reset'):text, id == ''?'js-reset':id, class ~ "" bton-reset"",  style, 'reset') }}
-{% endmacro %}
-{% macro button(text, id, class='', style='', type='button') %}
-<button id=""{{ id }}"" style='{{ style }}' class=""bton-general {{ class }}"" type=""{{ type }}"">{{ text | capitalize}}</button>
-{% endmacro %}
-{% endraw %}
-{% endhighlight %}
-
-Foreach
-: 
-{% highlight jinja %}
-{% raw %}
-{% for key, menu in menuArr %}
-    {% set isSubmenu = (menu.submenu is iterable and menu.submenu|length > 0 ? true : false) %}
-            {{ menu.title | capitalize }}
-{% endfor %}
-{% endraw %}
-{% endhighlight %}
-
-Variables
-: 
-{% highlight jinja %}
-{% raw %}
-{% set foo, bar = 'foo', 'bar' %}
-{{ loop.first?'checked=""checked""' }}
-{% endraw %}
-{% endhighlight %}
-
-Raw
-: 
-{% highlight jinja %}
-{% raw %}
-{{ vista|raw }}"
-{% endraw %}
-{% endhighlight %}
-
-# Notes
-
-## Method Access (.)
+## Accessing object properties and  array items with '.'
 
 * 'foo.bar' does the following things on the PHP layer:
     - check if foo is an array and bar a valid element;
@@ -76,31 +20,139 @@ Raw
     - if not, and if foo is an object, check that isBar is a valid method;
     - if not, return a null value.
 
+
+## Accessing arrays with '[]'
 * foo['bar'] on the other hand only works with PHP arrays:
     - check if foo is an array and bar a valid element;
     - if not, return a null value.
 
-## Get A Dynamic Attribute On A Variable
+
+> Arrays can also be accesed with dot (see above)
+
+## Strict Variables
+* If a variable or attribute does not exist, you will get back a null value when the strict_variables
+option is set to false, otherwise Twig will throw an error (see environment options).
+* These methods are useful to know if a variable is defined/empty/null
+    - is defined
+    - is empty
+    - is null
+
+## Template Inheritance
+
+include
+: equivalent behaviour as in PHP
+
+extends
+: Inherit blocks from a template (that can be overridden). See [docs](http://twig.sensiolabs.org/doc/tags/extends.html)
+
+#### Advanced inheritance
+embed
+: "Inline extension". The embed tag combines the behaviour of include and extends.
+
+use
+: "Multiple inheritance". The use statement tells Twig to import the blocks defined in blocks.html into the current
+template (it's like macros, but for blocks).
+
+
+## Syntax examples
+
+Extends, import, includes
+: 
+{% highlight jinja %}
+{% raw %}
+{% extends '_visualStruct.html.twig' %}
+{% import 'm_forms.html.twig' as forms %}
+{% include '_seleccion_idiomas.html.twig' %}
+{% endraw %}
+{% endhighlight %}
+
+Block syntax
+: 
+{% highlight jinja %}
+{% raw %}
+{% extends "base.html" %}
+
+{% block sidebar %}
+    <h3>Table Of Contents</h3>
+    {# parent() calls sidebar block from base.html #}
+    {{ parent() }}
+{% endblock %}
+{% endraw %}
+{% endhighlight %}
+
+
+If, for, length, keys, first, loop.first
+: 
+{% highlight jinja %}
+{% raw %}
+{%  if machine.availableDistros | length > 1 %}
+    <select name="js-distros-{{ idMachine }}" id='js-distros-{{ idMachine }}'>
+    {% for key, distro in machine.availableDistros %}
+        <option value="{{ key }}" loop.first?'checked=""checked""'> {{ distro }}</option>
+    {% endfor %}
+    </select>
+{% elseif machine.availableDistros | length == 1 %}
+    {{ machine.availableDistros | first }}
+    <input type="hidden" id='js-distros-{{ idMachine }}' value='{{ machine.availableDistros | keys | first }}'>
+{% endif %}
+{% endraw %}
+{% endhighlight %}
+
+Setting variables
+: 
+{% highlight jinja %}
+{% raw %}
+{% set foo, bar = 'foo', 'bar' %}
+{% endraw %}
+{% endhighlight %}
+
+Accessing dynamic attributes
+: 
+{% highlight jinja %}
 {% raw %}
 {{ attribute(object, method) }}
 {{ attribute(object, method, arguments) }}
 {{ attribute(array, item) }}
 {% endraw %}
+{% endhighlight %}
 
-## Constants
-* constant('Namespace\\Classname::CONSTANT_NAME')
-* {% raw %} {{ constant('RSS', date) }} {% endraw %}
+Constants
+: 
+{% highlight jinja %}
+{% raw %}
+{# static constants #}
+{{ constant('Namespace\\Classname::PER_CLASS_CONSTANT') }}
+{# constant RSS from date object #}
+{{ constant('RSS', date) }}
+{% endraw %}
+{% endhighlight %}
 
-## Strict Variables
-* If a variable or attribute does not exist, you will get back a null value when the strict_variables
-option is set to false, otherwise Twig will throw an error (see environment options).
-* Useful methods:
-    - is defined
-    - is empty / is null
+Filters (twig functions)
+: 
+{% highlight jinja %}
+{% raw %}
+{# Transform string into first char uppercase and the rest into lowercase #}
+{{ var | capitalize }}
+{# "titlecase" #}
+{{ var | title }}
+{# shows raw html #}
+{{ vista|raw }}"
+{% endraw %}
+{% endhighlight %}
+> See all filters available [here](http://twig.sensiolabs.org/doc/filters/index.html)
 
-## Advanced Inheritance
-embed
-: "Inline extension". The embed tag combines the behaviour of include and extends.
-
-use
-: "Multiple inheritance". The use statement tells Twig to import the blocks defined in blocks.html into the current template (it's like macros, but for blocks) "
+Macros
+: 
+{% highlight jinja %}
+{% raw %}
+{% macro reset(text='', id='', class='', style='') %}
+{# call macro from a macro #}
+{% import _self as buttons %}
+{{ buttons.button(text == '' ?t('reset'):text, id == ''?'js-reset':id, class ~ "" bton-reset"",  style, 'reset') }}
+{% endmacro %}
+{# this is the macro imported before #}
+{% macro button(text, id, class='', style='', type='button') %}
+<button id=""{{ id }}"" style='{{ style }}' class=""bton {{ class }}"" type=""{{ type }}"">{{ text | capitalize}}</button>
+{% endmacro %}
+{% endraw %}
+{% endhighlight %}
