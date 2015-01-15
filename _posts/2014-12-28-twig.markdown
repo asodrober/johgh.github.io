@@ -137,6 +137,11 @@ Filters (twig functions)
 {{ var | title }}
 {# shows raw html #}
 {{ vista|raw }}"
+{# Custom extension for string filters #}
+{# Transform string into first char uppercase and the rest left equal #}
+{{ var | uc_first }}
+{# "titlecase"->no difference with title #}
+{{ var | uc_words }}
 {% endraw %}
 {% endhighlight %}
 > See all filters available [here](http://twig.sensiolabs.org/doc/filters/index.html)
